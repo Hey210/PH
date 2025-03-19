@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Philippines Weather Radar</title>
+    <style>
+        :root {
+            --primary-color: #0052cc;
+            --secondary-color: #00b8d4;
+            --accent-color: #ffc107;
+            --bg-color: #f5f7fa;
+            --text-color: #333;
+            --border-radius: 12px;
+            --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .logo-icon {
+            color: var(--primary-color);
+            font-size: 28px;
+        }
+
+        .weather-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .radar-container {
+            width: 100%;
+            height: 750px;
+            position: relative;
+        }
+
+        .radar-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .tips-container {
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%);
+            border-radius: var(--border-radius);
+            margin-top: 30px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .tips-heading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .tips-icon {
+            background-color: var(--accent-color);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .tips {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .tip-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--secondary-color);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .tip-icon {
+            color: var(--secondary-color);
+            font-size: 20px;
+            margin-top: 2px;
+        }
+
+        .tip-text {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            padding: 20px 0;
+        }
+
+        .data-attribution {
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        /* Menu button styles */
+        .menu-container {
+            position: relative;
+        }
+
+        .menu-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .menu-button:hover {
+            background-color: #0043a4;
+        }
+
+        .menu-icon {
+            font-size: 18px;
+        }
+
+        .menu-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            min-width: 180px;
+            box-shadow: var(--box-shadow);
+            border-radius: 8px;
+            margin-top: 5px;
+            z-index: 100;
+            overflow: hidden;
+            display: none;
+        }
+
+        .menu-dropdown.show {
+            display: block;
+        }
+
+        .menu-item {
+            padding: 12px 15px;
+            display: block;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .menu-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .radar-container {
+                height: 400px;
+            }
+            
+            .tips {
+                grid-template-columns: 1fr;
+            }
+            
+            .logo h1 {
+                font-size: 20px;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .header-right {
+                display: flex;
+                justify-content: space-between;
+                width: 100%;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <span class="logo-icon">🌦️</span>
+                <h1>Philippines Weather Radar</h1>
+            </div>
+            <div class="header-right">
+                <div id="current-date"></div>
+                <div class="menu-container">
+                    <button class="menu-button" id="menuButton">
+                        <span class="menu-icon">☰</span>
+                        
+                    </button>
+                    <div class="menu-dropdown" id="menuDropdown">
+                        <a href="https://hey210.github.io/Radar/SAT.html" class="menu-item">Satellite Tracker</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="weather-card">
+            <div class="radar-container">
+                <iframe src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=mm&metricTemp=°C&metricWind=km/h&zoom=5&overlay=wind&product=ecmwf&level=surface&lat=12.983&lon=123.618&detailLat=16.826&detailLon=121.663&detail=true&pressure=true&message=true" frameborder="0"></iframe>
+            </div>
+        </div>
+
+        <div class="tips-container">
+            <div class="tips-heading">
+                <div class="tips-icon">💡</div>
+                <h2>How to Use This Weather Radar</h2>
+            </div>
+            <div class="tips">
+                <div class="tip-card">
+                    <span class="tip-icon">•</span>
+                    <p class="tip-text">To get accurate weather data, simply zoom in on the map and tap on your location.</p>
+                </div>
+                <div class="tip-card">
+                    <span class="tip-icon">•</span>
+                    <p class="tip-text">You can also change the type of map by clicking on the wind icon in the upper right corner of the map.</p>
+                </div>
+                <div class="tip-card">
+                    <span class="tip-icon">•</span>
+                    <p class="tip-text">Below the map, you can view the week's weather forecast.</p>
+                </div>
+                <div class="tip-card">
+                    <span class="tip-icon">•</span>
+                    <p class="tip-text">Swipe to the end to see the "About Location" section for more information about your location, including sunrise, sunset, dusk and other details.</p>
+                </div>
+                <div class="tip-card">
+                    <span class="tip-icon">•</span>
+                    <p class="tip-text">To view sunrise, sunset, and other location-specific data, you can do that by pointing a location on the map, or simply click on the flag icon and hover over it.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Real-time weather data for the Philippines</p>
+            <p class="data-attribution">Weather data provided by Windy.com /website created by <strong>norwell</strong></p>
+        </div>
+    </div>
+
+    <script>
+        // Display current date in header
+        const currentDate = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('current-date').textContent = currentDate.toLocaleDateString('en-US', options);
+
+        // Menu button functionality
+        const menuButton = document.getElementById('menuButton');
+        const menuDropdown = document.getElementById('menuDropdown');
+
+        menuButton.addEventListener('click', () => {
+            menuDropdown.classList.toggle('show');
+        });
+
+        // Close the dropdown when clicking outside
+        window.addEventListener('click', (event) => {
+            if (!event.target.matches('.menu-button') && !event.target.matches('.menu-icon')) {
+                if (menuDropdown.classList.contains('show')) {
+                    menuDropdown.classList.remove('show');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
